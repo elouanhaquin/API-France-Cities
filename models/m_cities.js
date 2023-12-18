@@ -74,11 +74,17 @@ Cities.prototype.getWithName = async function (name) {
 
         // Filtrer les communes dont le nom commence par la chaîne fournie
         const filteredCommunes = data.filter((entry) =>
-        entry['nom_commune'].startsWith(name.toLowerCase())
+        entry['nom_commune'].toLowerCase().startsWith(name.toLowerCase())
         );
 
         // Prendre les 10 premières communes
-        const first10Communes = filteredCommunes.slice(0, 10);
+        let first10Communes = filteredCommunes.slice(0, 10);
+       
+        first10Communes = first10Communes = first10Communes.filter((commune, index, self) => {
+            return index === self.findIndex((c) => (
+                c.code_postal === commune.code_postal
+            ));
+        });
 
         if (first10Communes.length > 0) {
         return first10Communes;
@@ -158,7 +164,7 @@ Cities.prototype.getWithPostalCodeAndRadius = async function (postalCode, radius
         if (communesInRadius.length > 0) {
           return communesInRadius;
         } else {
-          return 'Aucune commune trouvée dans le rayon spécifié.';
+          return communesInRadius;
         }
       } catch (error) {
         throw error;
