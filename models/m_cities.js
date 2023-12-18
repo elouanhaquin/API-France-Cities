@@ -74,7 +74,7 @@ Cities.prototype.getWithName = async function (name) {
 
         // Filtrer les communes dont le nom commence par la chaîne fournie
         const filteredCommunes = data.filter((entry) =>
-        entry['nom_commune'].toLowerCase().startsWith(name.toLowerCase())
+        entry['nom_commune'].startsWith(name.toLowerCase())
         );
 
         // Prendre les 10 premières communes
@@ -102,6 +102,44 @@ Cities.prototype.getWithNameAndRadius = async function (name, radius) {
     
         if (!targetCommune) {
           return 'Commune non trouvée avec le nom ' + name;
+        }
+    
+        const { latitude, longitude } = targetCommune;
+
+        const communesInRadius = data.filter((entry) => {
+          if (entry['latitude'] && entry['longitude']) {
+            const distance = geolib.getDistance(
+              { latitude: latitude, longitude: longitude },
+              { latitude: entry['latitude'], longitude: entry['longitude'] }
+            );
+            return (distance/1000) <= radius;
+          }
+          return false;
+        });
+    
+        if (communesInRadius.length > 0) {
+          return communesInRadius;
+        } else {
+          return 'Aucune commune trouvée dans le rayon spécifié.';
+        }
+      } catch (error) {
+        throw error;
+      }
+};
+
+
+Cities.prototype.getWithPostalCodeAndRadius = async function (postalCode, radius) {
+    try {
+        const data = await loadDataFile();
+    
+        const targetCommune = data.find((entry) =>
+          entry['code_postal'] == postalCode
+        );
+        
+        console.log(postalCode)
+
+        if (!targetCommune) {
+          return 'Commune non trouvée avec le code postal ' + postalCode;
         }
     
         const { latitude, longitude } = targetCommune;
