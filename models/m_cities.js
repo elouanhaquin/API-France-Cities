@@ -1,3 +1,4 @@
+const geolib = require('geolib'); 
 const { loadDataFile } = require('../utils/load_csv.js');
 
 function Cities({
@@ -67,27 +68,64 @@ Cities.prototype.getWithPostalCode = async function (postal_code) {
     }
   };
 
-  Cities.prototype.getWithName = async function (name) {
+Cities.prototype.getWithName = async function (name) {
     try {
-      const data = await loadDataFile();
-  
-      // Filtrer les communes dont le nom commence par la chaîne fournie
-      const filteredCommunes = data.filter((entry) =>
+        const data = await loadDataFile();
+
+        // Filtrer les communes dont le nom commence par la chaîne fournie
+        const filteredCommunes = data.filter((entry) =>
         entry['nom_commune'].toLowerCase().startsWith(name.toLowerCase())
-      );
-  
-      // Prendre les 10 premières communes
-      const first10Communes = filteredCommunes.slice(0, 10);
-  
-      if (first10Communes.length > 0) {
+        );
+
+        // Prendre les 10 premières communes
+        const first10Communes = filteredCommunes.slice(0, 10);
+
+        if (first10Communes.length > 0) {
         return first10Communes;
-      } else {
+        } else {
         return 'Aucune commune trouvée avec le nom commençant par ' + name;
-      }
+        }
     } catch (error) {
-      throw error;
+        throw error;
     }
-  };
+};
+
+
+Cities.prototype.getWithNameAndRadius = async function (name, radius) {
+    try {
+        const data = await loadDataFile();
+    
+        const targetCommune = data.find((entry) =>
+          entry['nom_commune'].toLowerCase() === name.toLowerCase()
+        );
+
+    
+        if (!targetCommune) {
+          return 'Commune non trouvée avec le nom ' + name;
+        }
+    
+        const { latitude, longitude } = targetCommune;
+
+        const communesInRadius = data.filter((entry) => {
+          if (entry['latitude'] && entry['longitude']) {
+            const distance = geolib.getDistance(
+              { latitude: latitude, longitude: longitude },
+              { latitude: entry['latitude'], longitude: entry['longitude'] }
+            );
+            return (distance/1000) <= radius;
+          }
+          return false;
+        });
+    
+        if (communesInRadius.length > 0) {
+          return communesInRadius;
+        } else {
+          return 'Aucune commune trouvée dans le rayon spécifié.';
+        }
+      } catch (error) {
+        throw error;
+      }
+};
 
 
 module.exports = Cities;

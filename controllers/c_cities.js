@@ -27,13 +27,27 @@ exports.getCitiesWithPostalCode = async(req, res, next) => {
     }
 };
 
-// Définir une route pour obtenir des informations sur une commune par son code INSEE
+// Définir une route pour obtenir des informations sur une commune par son nom
 exports.getWithName = async(req, res, next) => {
     //getting user data from request params
     const name = req.params.name
     try {
         const cities = new Cities({});
         const result = await cities.getWithName(name);
+        res.send(result);
+    } catch (error) {
+        //pass error to next()
+        next(errorToThrow);
+    }
+};
+
+exports.getWithNameAndRadius = async(req, res, next) => {
+    //getting user data from request params
+    const name = req.params.name
+    const radius = req.params.radius
+    try {
+        const cities = new Cities({});
+        const result = await cities.getWithNameAndRadius(name, radius);
         res.send(result);
     } catch (error) {
         //pass error to next()
