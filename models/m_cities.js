@@ -1,4 +1,4 @@
-const db = require('../db');
+const { loadDataFile } = require('../utils/load_csv.js');
 
 function Cities({
     code_postal = "",
@@ -32,37 +32,62 @@ function Cities({
 
 
 
-Cities.prototype.get = async function (id, type) {
+Cities.prototype.getWithLimit = async function (limit_number) {
+
     try {
-        const limit = parseInt(req.params.limit);
-        if (isNaN(limit)) {
-            res.status(400).json({ error: 'Le paramètre doit être un nombre entier.' });
-            return;
+        const data =  await loadDataFile();
+
+        if (isNaN(limit_number)) {
+          return  'Le paramètre doit être un nombre entier.' ;
         }
-        const limitedData = data.slice(0, limit);
-        res.json(limitedData);
-        return rows;
+    
+        const limitedData = data.slice(0, limit_number);
+        console.log(limitedData)
+        return limitedData;
     } catch (error) {
         throw error;
     }
 };
 
 
-Cities.prototype.getCars = async function (type) {
+Cities.prototype.getWithPostalCode = async function (postal_code) {
     try {
-        //getting user data from request params
-        const codeInsee = req.params.codeInsee;
-
-        // Rechercher la commune dans le tableau de données
-        const commune = data.find((entry) => entry['code_commune_INSEE'] === codeInsee);
-
-        if (commune) {
-            res.json(commune);
-        } else {
-            res.status(404).json({ error: 'Commune non trouvée' });
-        }
-        return rows;
+      const data = await loadDataFile();
+  
+      // Rechercher la commune dans le tableau de données
+      const commune = data.filter((entry) => (entry['code_postal'] == postal_code));
+  
+      if (commune) {
+        return commune;
+      } else {
+        return 'Commune non trouvée avec le code postal ' + postal_code;
+      }
     } catch (error) {
-        throw error;
+      throw error;
     }
-};
+  };
+
+  Cities.prototype.getWithName = async function (name) {
+    try {
+      const data = await loadDataFile();
+  
+      // Filtrer les communes dont le nom commence par la chaîne fournie
+      const filteredCommunes = data.filter((entry) =>
+        entry['nom_commune'].toLowerCase().startsWith(name.toLowerCase())
+      );
+  
+      // Prendre les 10 premières communes
+      const first10Communes = filteredCommunes.slice(0, 10);
+  
+      if (first10Communes.length > 0) {
+        return first10Communes;
+      } else {
+        return 'Aucune commune trouvée avec le nom commençant par ' + name;
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+
+module.exports = Cities;

@@ -14,5 +14,8 @@
     "morgan": "^1.10.0",
     "pg": "^8.7.3",
     "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.1.4"
   }
 }
