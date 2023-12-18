@@ -6,6 +6,7 @@ const citiesController = require('../controllers/c_cities');
 router.get('/communes/:limit', citiesController.getCitiesLimit);
 router.get('/commune/:name', citiesController.getWithName);
 router.get('/commune/:name/:radius', citiesController.getWithNameAndRadius);
-router.get('/commune_code/:codeInsee', citiesController.getCitiesWithPostalCode);
+router.get('/commune_code/:codePostal/:radius', citiesController.getWithPostalCodeAndRadius);
+router.get('/commune_code/:codePostal', citiesController.getCitiesWithPostalCode);
 
 module.exports = router;
