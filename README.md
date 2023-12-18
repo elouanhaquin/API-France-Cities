@@ -9,4 +9,6 @@ A modest API designed to perform the same function as adresse.data.gouv.fr, but 
 
 '/commune/:name/:radius' => retrieve all cities with name provided and inside a radius around this city
 
-'/commune_code/:codeInsee'  => retrieve all cities with Postal Code
+'/commune_code/:postalCode'  => retrieve all cities with Postal Code
+
+'/commune_code/:postalCode/:radius'  => retrieve all cities with Postal Code and inside a radius around this city
