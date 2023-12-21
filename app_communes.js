@@ -47,10 +47,8 @@ if(process.env.NODE_ENV == "DEV")
     });
 }
 else{
-    var httpServer = http.createServer(app);
     var httpsServer = https.createServer(credentials, app);
     
-    httpServer.listen(port);
     httpsServer.listen(port, () => {
         console.log('Server Started at ' + port);
     });
